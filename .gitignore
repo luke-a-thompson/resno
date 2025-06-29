@@ -10,5 +10,6 @@ wheels/
 .venv
 
 # Data
-data/
+data/**/*.npy
 data_raw/
+*.svg
