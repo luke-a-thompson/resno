@@ -7,18 +7,18 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import numpy as np
-from data.driver_and_solution_info import driver_path_locations, rde_solution_locations, RDE, Driver
+from data.driver_and_solution_info import driver_path_locs, rde_solution_locs, RDE, Driver
 
 
 def plot_driving_signal(driver: Driver):
     paths = []
-    for file in os.listdir(driver_path_locations[driver]):
+    for file in os.listdir(driver_path_locs[driver]):
         if file.endswith(".npy") and file != "fbm_path_h0.4.npy":  # Skip the main file, only use individual files
-            path = jnp.load(f"{driver_path_locations[driver]}/{file}")
+            path = jnp.load(f"{driver_path_locs[driver]}/{file}")
             paths.append(path)
 
     if not paths:
-        print(f"No individual path files found in {driver_path_locations[driver]}")
+        print(f"No individual path files found in {driver_path_locs[driver]}")
         return
 
     # Convert to numpy array for plotting
@@ -37,17 +37,17 @@ def plot_driving_signal(driver: Driver):
 
 def plot_rde_solution(rde: RDE):
     paths = []
-    for file in os.listdir(rde_solution_locations[rde]):
+    for file in os.listdir(rde_solution_locs[rde]):
         if file.endswith(".npy"):
             # Load the RDE solutions - these are Solution objects from diffrax
-            solutions = jnp.load(f"{rde_solution_locations[rde]}/{file}", allow_pickle=True)
+            solutions = jnp.load(f"{rde_solution_locs[rde]}/{file}", allow_pickle=True)
             # Extract the ys (solution values) from each Solution object
             for sol in solutions:
                 if hasattr(sol, "ys") and sol.ys is not None:
                     paths.append(sol.ys)
 
     if not paths:
-        print(f"No solution files found in {rde_solution_locations[rde]}")
+        print(f"No solution files found in {rde_solution_locs[rde]}")
         return
 
     # Convert to numpy array for plotting

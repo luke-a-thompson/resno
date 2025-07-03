@@ -13,3 +13,4 @@ wheels/
 data/**/*.npy
 data_raw/
 *.svg
+*.npy

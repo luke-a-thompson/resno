@@ -21,6 +21,18 @@ class RESNOBlock(eqx.Module):
         return x
 
 
+class SignatureEncoder(eqx.Module):
+    linear: eqx.nn.Linear
+
+    def __init__(self, in_sig_dim: int, out_sig_dim: int, key: jax.Array) -> None:
+        super().__init__()
+        self.linear = eqx.nn.Linear(in_sig_dim, out_sig_dim, key=key)
+
+    def __call__(self, x: jax.Array) -> jax.Array:
+        x = self.linear(x)
+        return x
+
+
 class SignatureInverter(eqx.Module):
     lin: eqx.nn.Linear
 
@@ -34,17 +46,20 @@ class SignatureInverter(eqx.Module):
 
 
 class RESNO(eqx.Module):
+    signature_encoder: SignatureEncoder
     resno_blocks: list[RESNOBlock]
-
     signature_inverter: SignatureInverter
 
-    def __init__(self, in_sig_dim: int, out_sig_dim: int, out_path_dim: int, num_resno_blocks: int, key: jax.Array) -> None:
+    def __init__(self, in_sig_dim: int, hidden_sig_dim: int, out_path_dim: int, num_resno_blocks: int, key: jax.Array) -> None:
         super().__init__()
-        self.resno_blocks = [RESNOBlock(in_sig_dim, out_sig_dim, key=key) for _ in range(num_resno_blocks)]
+        self.signature_encoder = SignatureEncoder(in_sig_dim, hidden_sig_dim, key=key)
 
-        self.signature_inverter = SignatureInverter(out_sig_dim, out_path_dim, key=key)
+        self.resno_blocks = [RESNOBlock(hidden_sig_dim, hidden_sig_dim, key=key) for _ in range(num_resno_blocks)]
+
+        self.signature_inverter = SignatureInverter(hidden_sig_dim, out_path_dim, key=key)
 
     def __call__(self, x: jax.Array) -> jax.Array:
+        x = self.signature_encoder(x)
         for block in self.resno_blocks:
             x = block(x)
 

@@ -1,0 +1,34 @@
+[data_config]
+# Dataset configuration
+driver = "fBM"
+rde = "fOU"
+hurst = 0.3
+signature_type = "log_signature"
+signature_depth = 3
+num_steps = 1001
+num_paths = 100
+dim = 2
+
+# Data split percentages
+train_percentage = 0.8
+val_percentage = 0.1
+test_percentage = 0.1
+
+# Training configuration
+epochs = 100
+batch_size = 3
+seed = 42
+
+# RDE-specific parameters (for fOU)
+lam = 1.0
+sigma = 0.5
+y0 = 1.0
+
+[model_config]
+use_rough_paths = false
+hidden_dim = 64
+num_resno_blocks = 4
+
+[autoencoder_config]
+C_AE = 1.0
+C_e = 1.0
